@@ -24,155 +24,6 @@ public final class Constants {
     public static final int FEEDER_MOTOR_ID = 13;
     public static final int INTAKE_LAUNCHER_MOTOR_ID = 14;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
     // Current limit and nominal voltage for fuel mechanism motors.
     public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
@@ -228,8 +79,13 @@ public final class Constants {
     public static final int kRearLeftTurningCanId = 6;
     public static final int kFrontRightTurningCanId = 3;
     public static final int kRearRightTurningCanId = 2;
+    
+    public static final int KFrontLeftTurningCancoderId = 9;
+    public static final int KFrontRightTurningCancoderId = 10;
+    public static final int KRearLeftTurningCancoderId = 12;
+    public static final int KRearRightTurningCancoderId = 13;
+    
 
-    public static final int kRollerCanId = 7;
 
     public static final boolean kGyroReversed = true;
   }
@@ -238,7 +94,7 @@ public final class Constants {
     // May change - count teeth
     public static final int kDrivingMotorPinionTeeth = 14;
 
-    // May change? 
+    // May change? (need to change)
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;

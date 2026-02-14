@@ -17,7 +17,8 @@ public class Configs {
             // ex. driv f
             //factor converts motor rotations to metres
             double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI / ModuleConstants.kDrivingMotorReduction;
-            double turningFactor = 2 * Math.PI;
+            double steeringReduction = 150.0 / 7.0; // MK4i L2
+            double turningFactor = (2 * Math.PI) / steeringReduction;
 
             drivingConfig
                 .idleMode(IdleMode.kBrake)
@@ -35,20 +36,16 @@ public class Configs {
             turningConfig
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(20);
-            turningConfig.absoluteEncoder
-                // invert turning encoder because output shaft rotates in the opposite direction of the steering motor in MAXSwerve module
-                .inverted(true)
-                .positionConversionFactor(turningFactor) // radians
-                .velocityConversionFactor(turningFactor / 60.0); // radians per second
+
+            turningConfig.encoder
+                .positionConversionFactor(turningFactor)   // motor rotations → radians
+                .velocityConversionFactor(turningFactor / 60.0); // rad/sec
             turningConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-                // may need to change
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)  // <-- IMPORTANT
                 .pid(5, 0, 0)
                 .outputRange(-1, 1)
-                // PID wraps around for turning motor, eg go thru 0
-                // pid controller going from 350 to 10 degrees will go thru 0 rather backwards, which will take longer
                 .positionWrappingEnabled(true)
-                .positionWrappingInputRange(0, turningFactor);
+                .positionWrappingInputRange(-Math.PI, Math.PI);
         }
 
         public Command autoBalanceCommand() {
