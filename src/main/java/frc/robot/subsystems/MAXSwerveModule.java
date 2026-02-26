@@ -12,31 +12,51 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-
 import frc.robot.Configs;
+import com.ctre.phoenix.sensors.*;
+import com.ctre.phoenix6.hardware.CANcoder;
+
 
 public class MAXSwerveModule {
+  private final CANcoder m_cancoder;        // absolute encoder
+
   private final SparkMax m_drivingSpark;
   private final SparkMax m_turningSpark;
 
   public final RelativeEncoder m_drivingEncoder;
-  public final AbsoluteEncoder m_turningEncoder;
+  public final RelativeEncoder m_turningEncoder;
 
   private final SparkClosedLoopController m_drivingClosedLoopController;
   private final SparkClosedLoopController m_turningClosedLoopController;
+  
+  private double absoluteRotations;
+  private double absoluteAngleRad;
+
+
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
-  // docs use NEOs, SPARKS MAX, and through bore encoder.
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
+
+
+  
+  // docs use NEOs, SPARKS MAX, and through Magnetic CANcoder encoder.
+  public MAXSwerveModule(int drivingCANId, int cancoderCANId, int turningCANId, double chassisAngularOffset) {
     m_drivingSpark = new SparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
+    m_cancoder = new CANcoder(cancoderCANId);//match the cancoderId
+
 
     m_drivingEncoder = m_drivingSpark.getEncoder();
-    m_turningEncoder = m_turningSpark.getAbsoluteEncoder();
+    m_turningEncoder = m_turningSpark.getEncoder();
+    absoluteRotations = m_cancoder.getPosition().getValueAsDouble(); // gives the rotations
+    absoluteAngleRad = absoluteRotations*2*Math.PI; //gives the radian, so it can be used
+    //Basically so that the module is robot orientated rather than module or
+    absoluteAngleRad -= chassisAngularOffset;     // apply chassis offset so that the aboslute encoder is correct for every wheel, as the foward may not be the same for every wheel depending on how the chassis is facing, so this subtracts it so that they know that forsay 0 rad is fowrads. 
 
-    m_drivingClosedLoopController = m_drivingSpark.getClosedLoopController();
+    m_turningEncoder.setPosition(absoluteAngleRad);//updates the turning encoder to have the aboslute angle.
+
+    m_drivingClosedLoopController = m_drivingSpark.getClosedLoopController();//configuration for pid
     m_turningClosedLoopController = m_turningSpark.getClosedLoopController();
 
     // apply the respective configurations to the SPARKS. Reset parameters before
@@ -47,9 +67,11 @@ public class MAXSwerveModule {
     m_turningSpark.configure(Configs.MAXSwerveModule.turningConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
+    absoluteAngleRad -= m_chassisAngularOffset;
+
     m_chassisAngularOffset = chassisAngularOffset;
-    m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
-    m_drivingEncoder.setPosition(0);
+    m_desiredState.angle = new Rotation2d(absoluteAngleRad); //this only happens at start up so once per module. 
+    m_drivingEncoder.setPosition(0); //starting 0 at that posistion doesn't matter where lol
   }
 
   // returns the current state of the module.

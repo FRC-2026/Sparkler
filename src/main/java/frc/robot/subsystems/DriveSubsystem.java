@@ -7,37 +7,41 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import com.studica.frc.AHRS;
+
 
 public class DriveSubsystem extends SubsystemBase {
     // creates SwerveModules
     public final static MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
+        DriveConstants.KFrontLeftTurningCancoderId,
         DriveConstants.kFrontLeftTurningCanId,
         DriveConstants.kFrontLeftChassisAngularOffset);
 
     public final static MAXSwerveModule m_frontRight = new MAXSwerveModule(
         DriveConstants.kFrontRightDrivingCanId,
+        DriveConstants.KFrontRightTurningCancoderId,
         DriveConstants.kFrontRightTurningCanId,
         DriveConstants.kFrontRightChassisAngularOffset);
 
     public final static MAXSwerveModule m_rearLeft = new MAXSwerveModule(
         DriveConstants.kRearLeftDrivingCanId,
+        DriveConstants.KRearLeftTurningCancoderId,
         DriveConstants.kRearLeftTurningCanId,
         DriveConstants.kBackLeftChassisAngularOffset);
 
     public final static MAXSwerveModule m_rearRight = new MAXSwerveModule(
         DriveConstants.kRearRightDrivingCanId,
+        DriveConstants.KRearRightTurningCancoderId,
         DriveConstants.kRearRightTurningCanId,
         DriveConstants.kBackRightChassisAngularOffset);
 
     // NavX2 gyro (doesnt work 2026?)
-    //AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+    public static AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
     // gyro for field oriented swerves 
-    public final static ADIS16470_IMU m_gyro = new ADIS16470_IMU();
             
     // odometry class for tracking robot pose
     public static SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
