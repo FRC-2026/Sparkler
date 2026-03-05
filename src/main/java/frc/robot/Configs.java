@@ -12,42 +12,53 @@ public class Configs {
         public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
         public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
 
-        static {
-            // use module constants to calculate conversion factors and feed forward gain
-            // ex. driv f
-            //factor converts motor rotations to metres
-            double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI / ModuleConstants.kDrivingMotorReduction;
-            double steeringReduction = 150.0 / 7.0; // MK4i L2
-            double turningFactor = (2 * Math.PI) / steeringReduction;
+ static {
+    double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI / ModuleConstants.kDrivingMotorReduction;
+    double steeringReduction = 150.0 / 7.0; // MK4i L2
+    double turningFactor = (2 * Math.PI) / steeringReduction;
 
-            drivingConfig
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(40);
-            drivingConfig.encoder
-                .positionConversionFactor(drivingFactor) // encoder ticks to metres
-                .velocityConversionFactor(drivingFactor / 60.0); // encoder velocity to m/s
-            drivingConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                // may need to change, higher p reacts faster but can cause unwanted back and forth movement
-                // integral is drift correction derivitave is reduces sudden changes
-                .pid(0.08, 0, 0)//okok
-                .outputRange(-1, 1);
+    // --- DRIVING CONFIG ---
+    drivingConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(40);
 
-            turningConfig
-                .idleMode(IdleMode.kBrake)
-                .smartCurrentLimit(20);
+    drivingConfig.encoder
+        .positionConversionFactor(drivingFactor)
+        .velocityConversionFactor(drivingFactor / 60.0);
 
-            turningConfig.encoder
-                .positionConversionFactor(turningFactor)   // motor rotations → radians
-                .velocityConversionFactor(turningFactor / 60.0); // rad/sec
-            turningConfig.closedLoop
-                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)  // <-- IMPORTANT
-                .pid(5, 0, 0)
-                .outputRange(-1, 1)
-                .positionWrappingEnabled(true)
-                .positionWrappingInputRange(-Math.PI, Math.PI);
-        }
+    drivingConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(0.08, 0, 0)
+        .outputRange(-1, 1);
 
+    // --- Feedforward calculation ---
+    // kV = volts per m/s, kS = static friction voltage, kA = volts per m/s^2
+    double kV = 12 / ModuleConstants.kDriveWheelFreeSpeedRps; // volts per m/s
+    double kS = 0.2; // small voltage to overcome friction
+    double kA = 0.05; // acceleration voltage, adjust after testing
+
+    // store feedforward somewhere accessible, e.g., ModuleConstants or Configs
+    // Example:
+    ModuleConstants.kDriveKV = kV;
+    ModuleConstants.kDriveKS = kS;
+    ModuleConstants.kDriveKA = kA;
+
+    // --- TURNING CONFIG ---
+    turningConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(20);
+
+    turningConfig.encoder
+        .positionConversionFactor(turningFactor)
+        .velocityConversionFactor(turningFactor / 60.0);
+
+    turningConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(5, 0, 0)
+        .outputRange(-1, 1)
+        .positionWrappingEnabled(true)
+        .positionWrappingInputRange(-Math.PI, Math.PI);
+}
         public Command autoBalanceCommand() {
             throw new UnsupportedOperationException("Unimplemented method 'autoBalanceCommand'");
         }

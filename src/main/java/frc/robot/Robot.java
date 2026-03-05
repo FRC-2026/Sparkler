@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.hal.HAL;
+
+import com.ctre.phoenix6.hardware.CANcoder;
+
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,6 +34,11 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private CANcoder cancoder;
+  private CANcoder cancoder1;
+  private CANcoder cancoder2;
+  private CANcoder cancoder3;
+
 
   private final Field2d m_field = new Field2d();
 
@@ -48,30 +56,42 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-
     // Used to track usage of Kitbot code, please do not remove.
     HAL.report(tResourceType.kResourceType_Framework, 10);
+    cancoder = new CANcoder(9);
+    cancoder1 = new CANcoder(10);
+    cancoder2 = new CANcoder(11);
+    cancoder3 = new CANcoder(12);
+    double absolutePosition = cancoder.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    double absolutePosition1 = cancoder1.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    double absolutePosition2 = cancoder2.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    double absolutePosition3 = cancoder3.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+
+    SmartDashboard.putNumber("CANcoder Absolute Position", absolutePosition); // front right 
+    SmartDashboard.putNumber("CANcoder Absolute Position1", absolutePosition1); // back right
+    SmartDashboard.putNumber("CANcoder Absolute Position2", absolutePosition2); // front left
+    SmartDashboard.putNumber("CANcoder Absolute Position3", absolutePosition3); // back left 
+
 
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putData("Swerve Drive", new Sendable() {
       @Override
       public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("SwerveDrive");
+        // builder.setSmartDashboardType("SwerveDrive");
 
-        builder.addDoubleProperty("Front Left Angle", () -> DriveSubsystem.m_frontLeft.m_turningEncoder.getPosition(), null);
-        builder.addDoubleProperty("Front Left Velocity", () -> DriveSubsystem.m_frontLeft.m_drivingEncoder.getVelocity(), null);
+        // builder.addDoubleProperty("Front Left Angle", () -> DriveSubsystem.m_frontLeft.m_turningEncoder.getPosition(), null);
+        // builder.addDoubleProperty("Front Left Velocity", () -> DriveSubsystem.m_frontLeft.m_drivingEncoder.getVelocity(), null);
 
-        builder.addDoubleProperty("Front Right Angle", () -> DriveSubsystem.m_frontRight.m_turningEncoder.getPosition(), null);
-        builder.addDoubleProperty("Front Right Velocity", () -> DriveSubsystem.m_frontRight.m_drivingEncoder.getVelocity(), null);
+        // builder.addDoubleProperty("Front Right Angle", () -> DriveSubsystem.m_frontRight.m_turningEncoder.getPosition(), null);
+        // builder.addDoubleProperty("Front Right Velocity", () -> DriveSubsystem.m_frontRight.m_drivingEncoder.getVelocity(), null);
 
-        builder.addDoubleProperty("Back Left Angle", () -> DriveSubsystem.m_rearLeft.m_turningEncoder.getPosition(), null);
-        builder.addDoubleProperty("Back Left Velocity", () -> DriveSubsystem.m_rearLeft.m_drivingEncoder.getVelocity(), null);
+        // builder.addDoubleProperty("Back Left Angle", () -> DriveSubsystem.m_rearLeft.m_turningEncoder.getPosition(), null);
+        // builder.addDoubleProperty("Back Left Velocity", () -> DriveSubsystem.m_rearLeft.m_drivingEncoder.getVelocity(), null);
 
-        builder.addDoubleProperty("Back Right Angle", () -> DriveSubsystem.m_rearRight.m_turningEncoder.getPosition(), null);
-        builder.addDoubleProperty("Back Right Velocity", () -> DriveSubsystem.m_rearRight.m_drivingEncoder.getVelocity(), null);
+        // builder.addDoubleProperty("Back Right Angle", () -> DriveSubsystem.m_rearRight.m_turningEncoder.getPosition(), null);
+        // builder.addDoubleProperty("Back Right Velocity", () -> DriveSubsystem.m_rearRight.m_drivingEncoder.getVelocity(), null);
 
-        builder.addDoubleProperty("Robot Angle", () -> DriveSubsystem.m_gyro.getAngle(), null);
+        // builder.addDoubleProperty("Robot Angle", () -> DriveSubsystem.m_gyro.getAngle(), null);
       }
     });
   }
@@ -94,13 +114,13 @@ public class Robot extends TimedRobot {
     // interrupted commands,
     // and running subsystem periodic() methods. This must be called from the
     // robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    m_field.setRobotPose(DriveSubsystem.m_odometry.getPoseMeters());
-    SmartDashboard.putNumber("Max Speed", Constants.DriveConstants.kMaxSpeedMetersPerSecond);
-    SmartDashboard.putNumber("Match Timer", DriverStation.getMatchTime());
-    SmartDashboard.putNumber("Gyro", DriveSubsystem.m_gyro.getAngle());
-    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
-    SmartDashboard.putNumber("Shooter voltage from controller: ", Constants.FuelConstants.LAUNCHING_LAUNCHER_VOLTAGE);
+    // // block in order for anything in the Command-based framework to work.
+    // m_field.setRobotPose(DriveSubsystem.m_odometry.getPoseMeters());
+    // SmartDashboard.putNumber("Max Speed", Constants.DriveConstants.kMaxSpeedMetersPerSecond);
+    // SmartDashboard.putNumber("Match Timer", DriverStation.getMatchTime());
+    // SmartDashboard.putNumber("Gyro", DriveSubsystem.m_gyro.getAngle());
+    // SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+    // SmartDashboard.putNumber("Shooter voltage from controller: ", Constants.FuelConstants.LAUNCHING_LAUNCHER_VOLTAGE);
     CommandScheduler.getInstance().run();
   }
 

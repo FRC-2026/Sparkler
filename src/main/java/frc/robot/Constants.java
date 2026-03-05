@@ -19,7 +19,7 @@ import edu.wpi.first.math.util.Units;
  * wherever the constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final double maxspeed = Units.feetToMeters(4.5);
+  public static final double maxspeed = Units.feetToMeters(5.5);
   public static final class FuelConstants {
     // Motor controller IDs for Fuel Mechanism motors
     public static final int FEEDER_MOTOR_ID = 13;
@@ -64,11 +64,6 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2), // back left
         new Translation2d(kWheelBase / 2, -kTrackWidth / 2)); // back right
 
-    // encoder offsets as wheels starting positions, 0, won't be exact with the chassis frame
-    public static final double kFrontLeftChassisAngularOffset = 0.0;//-Math.PI / 2; // -90 deg
-    public static final double kFrontRightChassisAngularOffset = 0.0; 
-    public static final double kBackLeftChassisAngularOffset = 0.0;//Math.PI; // 180 deg
-    public static final double kBackRightChassisAngularOffset = 0.0;//Math.PI / 2; // 90 deg
 
     // SPARK MAX CAN IDs - Must change 
     public static final int kFrontLeftDrivingCanId = 7;
@@ -85,23 +80,20 @@ public final class Constants {
     public static final int KFrontRightTurningCancoderId = 11;
     public static final int KRearLeftTurningCancoderId = 10;
     public static final int KRearRightTurningCancoderId = 12;
+
+  }
     
-
-
-    public static final boolean kGyroReversed = true;
+  public static final class ModuleConstants { 
+    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60.0; 
+    public static final double kWheelDiameterMeters = 0.1016; // 4" 
+    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI; // MK4i L3 gear ratio 
+    public static final double kDrivingMotorReduction = 6.12; 
+    public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction; 
+    public static double kDriveKV; // volts per m/s
+    public static double kDriveKS; // static voltage
+    public static double kDriveKA; // acceleration voltage
   }
 
-  public static final class ModuleConstants {
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60.0;
-
-    public static final double kWheelDiameterMeters = 0.1016; // 4"
-    public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-
-    // MK4i L3 gear ratio
-    public static final double kDrivingMotorReduction = 6.12;
-
-    public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
-  }
 
   public static final class OIConstants {
     // may change - controller's usb port
@@ -110,9 +102,19 @@ public final class Constants {
     public static final double kDriveDeadband = 0.05;
   }
 
+  public static final class FeedforwardConstants {
+    public static final double kS = 0.2;  // Static voltage
+    public static final double kV = 12 / ((NeoMotorConstants.kFreeSpeedRpm / 60.0) * 2 * Math.PI);
+    public static final double kA = 0.05; // Tuning required
+  }
+
   // RPM = revolutions per minute, unit of rotational speed
   // free speed AKA max speed it can achieve not under load ex. lifting and arm weight 
-  public static final class NeoMotorConstants {
-    public static final double kFreeSpeedRpm = 5820;
+  public static final class NeoMotorConstants { 
+    public static final double kFreeSpeedRpm = 5820;       // Free speed (no load)
+    public static final double kStallTorqueNm = 2.6;       // Stall torque in Newton-meters
+    public static final double kStallCurrentA = 105;       // Stall current in Amps
+    public static final double kFreeCurrentA = 1.5;        // Free current in Amps
+    public static final double kMotorResistance = 12 / kStallCurrentA; // Ohms  }
   }
 }
