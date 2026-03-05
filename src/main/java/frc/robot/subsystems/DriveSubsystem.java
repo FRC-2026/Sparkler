@@ -1,47 +1,60 @@
 package frc.robot.subsystems;
 
+import java.io.File;
+
+import com.studica.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import com.studica.frc.AHRS;
+import swervelib.SwerveDrive;
+import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import static edu.wpi.first.units.Units.Meter;
 
 
 public class DriveSubsystem extends SubsystemBase {
+    double maxspeed = Units.feetToMeters(4.5);
+    File directory = new File(Filesystem.getDeployDirectory(),"swerve");
+    SwerveDrive swerveDrive;
+
     // creates SwerveModules
     public final static MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
         DriveConstants.KFrontLeftTurningCancoderId,
-        DriveConstants.kFrontLeftTurningCanId,
-        DriveConstants.kFrontLeftChassisAngularOffset);
+        DriveConstants.kFrontLeftTurningCanId);
 
     public final static MAXSwerveModule m_frontRight = new MAXSwerveModule(
         DriveConstants.kFrontRightDrivingCanId,
         DriveConstants.KFrontRightTurningCancoderId,
-        DriveConstants.kFrontRightTurningCanId,
-        DriveConstants.kFrontRightChassisAngularOffset);
+        DriveConstants.kFrontRightTurningCanId);
 
     public final static MAXSwerveModule m_rearLeft = new MAXSwerveModule(
         DriveConstants.kRearLeftDrivingCanId,
         DriveConstants.KRearLeftTurningCancoderId,
-        DriveConstants.kRearLeftTurningCanId,
-        DriveConstants.kBackLeftChassisAngularOffset);
+        DriveConstants.kRearLeftTurningCanId);
 
     public final static MAXSwerveModule m_rearRight = new MAXSwerveModule(
         DriveConstants.kRearRightDrivingCanId,
         DriveConstants.KRearRightTurningCancoderId,
-        DriveConstants.kRearRightTurningCanId,
-        DriveConstants.kBackRightChassisAngularOffset);
+        DriveConstants.kRearRightTurningCanId);
 
-    // NavX2 gyro (doesnt work 2026?)
+    // Gyro sensor NavX2 I   
+    //AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+
     public static AHRS m_gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
-
-    // gyro for field oriented swerves 
             
     // odometry class for tracking robot pose
     public static SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -54,9 +67,21 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
-        public DriveSubsystem() {
-            // new path planner code in here 
+    
+    public DriveSubsystem() {
+        SwerveDriveTelemetry.verbosity=TelemetryVerbosity.HIGH;
+       try
+        {
+        swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.maxspeed, new Pose2d(new Translation2d(Meter.of(1),
+                                                                                                                    Meter.of(4)),
+                                                                                                                    Rotation2d.fromDegrees(0)));
+        // Alternative method if you don't want to supply the conversion factor via JSON files.
+        // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+        } catch (Exception e)
+        {
+        throw new RuntimeException(e);
         }
+    }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
         SwerveModuleState[] moduleStates = new SwerveModuleState[] {
@@ -68,10 +93,10 @@ public class DriveSubsystem extends SubsystemBase {
     
         return DriveConstants.kDriveKinematics.toChassisSpeeds(moduleStates);
     }
-
     @Override
     public void periodic() {
-        // Constantly updates pose for odometry
+        // constantly update pos for odometry
+        // i love odometry so cool in the vid
         m_odometry.update(
             Rotation2d.fromDegrees(-m_gyro.getAngle()),
             new SwerveModulePosition[] {
@@ -82,16 +107,11 @@ public class DriveSubsystem extends SubsystemBase {
             });
     }
 
-    // Returns pose of robot 
     public Pose2d getPose() {
         return m_odometry.getPoseMeters();
     }
 
-    /**
-     * Resets the odometry to the given pose 
-     * 
-     * @param pose         desired pose of the robot
-     */
+    // resets the odometry to the specified pose, pose parameter for desired 
     public void resetOdometry(Pose2d pose) {
         m_odometry.resetPosition(
             Rotation2d.fromDegrees(-m_gyro.getAngle()),
@@ -105,7 +125,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Method to drive the robot using joystick info.
+     * method to drive the robot using joystick info.
      *
      * @param xSpeed        speed of the robot in the x direction (forward).
      * @param ySpeed        speed of the robot in the y direction (sideways).
@@ -114,7 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
      *                      field.
      */
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-        // Convert the commanded speeds into the correct units for the drivetrain
+        // convert the commanded speeds into the correct units for the drivetrain
         double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
@@ -124,7 +144,6 @@ public class DriveSubsystem extends SubsystemBase {
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                     Rotation2d.fromDegrees(-m_gyro.getAngle()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-
         SwerveDriveKinematics.desaturateWheelSpeeds(   
             swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -134,7 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the wheels into an X formation to prevent movement.
+     * sets the wheels into an X formation to prevent movement.
      */
     public void setX() {
         m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -144,7 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the swerve ModuleStates.
+     * sets the swerve ModuleStates.
      *
      * @param desiredStates the desired SwerveModule states.
      */
@@ -157,9 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.setDesiredState(desiredStates[3]);
     }
 
-    /** 
-     * Resets the drive encoders to currently read a position of 0. 
-     */
+    /** resets the drive encoders to currently read a position of 0. */
     public void resetEncoders() {
         m_frontLeft.resetEncoders();
         m_rearLeft.resetEncoders();
@@ -167,9 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.resetEncoders();
     }
 
-    /** 
-     * Zeroes the heading of the robot. 
-     */
+    /** Zeroes the heading of the robot. */
     public void zeroHeading() {
         m_gyro.reset();
     }
@@ -191,19 +206,13 @@ public class DriveSubsystem extends SubsystemBase {
     public double getTurnRate() {
         return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
     }
-    
-    /**
-     * Increases voltage of motors (speed) for drivetrain 
-     */
+
     public void speedIncrease() {   
         if(DriveConstants.kMaxSpeedMetersPerSecond < 6.0)
         DriveConstants.kMaxSpeedMetersPerSecond += 1.0; 
         System.out.println("Max Speed: " + DriveConstants.kMaxSpeedMetersPerSecond);       
     }
 
-    /**
-     * Decreases voltage of motors (speed) for drivetrain 
-     */
     public void speedDecrease() {
         if(DriveConstants.kMaxSpeedMetersPerSecond > 3.0)
         DriveConstants.kMaxSpeedMetersPerSecond -= 1.0;

@@ -32,16 +32,11 @@ public class MAXSwerveModule {
   private double absoluteRotations;
   private double absoluteAngleRad;
 
-
-
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
-
-
-  
   // docs use NEOs, SPARKS MAX, and through Magnetic CANcoder encoder.
-  public MAXSwerveModule(int drivingCANId, int cancoderCANId, int turningCANId, double chassisAngularOffset) {
+  public MAXSwerveModule(int drivingCANId, int cancoderCANId, int turningCANId) {
     m_drivingSpark = new SparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
     m_cancoder = new CANcoder(cancoderCANId);//match the cancoderId
@@ -52,8 +47,8 @@ public class MAXSwerveModule {
     absoluteRotations = m_cancoder.getPosition().getValueAsDouble(); // gives the rotations
     absoluteAngleRad = absoluteRotations*2*Math.PI; //gives the radian, so it can be used
     //Basically so that the module is robot orientated rather than module or
-    absoluteAngleRad -= chassisAngularOffset;     // apply chassis offset so that the aboslute encoder is correct for every wheel, as the foward may not be the same for every wheel depending on how the chassis is facing, so this subtracts it so that they know that forsay 0 rad is fowrads. 
-
+    absoluteAngleRad -= m_chassisAngularOffset;
+    
     m_turningEncoder.setPosition(absoluteAngleRad);//updates the turning encoder to have the aboslute angle.
 
     m_drivingClosedLoopController = m_drivingSpark.getClosedLoopController();//configuration for pid
@@ -67,11 +62,6 @@ public class MAXSwerveModule {
     m_turningSpark.configure(Configs.MAXSwerveModule.turningConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
 
-    absoluteAngleRad -= m_chassisAngularOffset;
-
-    m_chassisAngularOffset = chassisAngularOffset;
-    m_desiredState.angle = new Rotation2d(absoluteAngleRad); //this only happens at start up so once per module. 
-    m_drivingEncoder.setPosition(0); //starting 0 at that posistion doesn't matter where lol
   }
 
   // returns the current state of the module.

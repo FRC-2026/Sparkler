@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.CANFuelSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -29,7 +28,6 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
     
   // The robot's subsystems
-  private final CANFuelSubsystem ballSubsystem = new CANFuelSubsystem();
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
@@ -80,31 +78,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
-    /* BUMPERS AND TRIGGERS*/
-    operatorController.leftBumper()
-        .onTrue(new InstantCommand(() -> ballSubsystem.speedDecrease(), ballSubsystem));
-    
-    operatorController.rightBumper()
-        .onTrue(new InstantCommand(() -> ballSubsystem.speedIncrease(), ballSubsystem));
-
-    // While the left trigger on the operator controller is held, spin up for 1
-    // second, then launch fuel. When the button is released, stop (shooter).
-    operatorController.leftTrigger()
-        .whileTrue(ballSubsystem.spinUpCommand().withTimeout(SPIN_UP_SECONDS)
-            .andThen(ballSubsystem.launchCommand())
-            .finallyDo(() -> ballSubsystem.stop()));
-    operatorController.a()
-        .whileTrue(ballSubsystem.runEnd(() -> ballSubsystem.eject(), () -> ballSubsystem.stop()));
-    
-    /* BUTTONS */
-    // While the A button is held on the operator controller, eject fuel back out
-    // the intake
-    operatorController.a()
-        .whileTrue(ballSubsystem.runEnd(() -> ballSubsystem.eject(), () -> ballSubsystem.stop()));
-    // While the Y button on operator controller is held, intake Fuel
-    operatorController.y()
-        .whileTrue(ballSubsystem.runEnd(() -> ballSubsystem.intake(), () -> ballSubsystem.stop()));
 
     driverController.leftBumper()
         .onTrue(new InstantCommand(() -> m_robotDrive.speedDecrease(), m_robotDrive));

@@ -95,7 +95,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods. This must be called from the
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
     m_field.setRobotPose(DriveSubsystem.m_odometry.getPoseMeters());
     SmartDashboard.putNumber("Max Speed", Constants.DriveConstants.kMaxSpeedMetersPerSecond);
     SmartDashboard.putNumber("Match Timer", DriverStation.getMatchTime());
