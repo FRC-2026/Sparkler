@@ -14,7 +14,7 @@ public class Configs {
 
  static {
     double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI / ModuleConstants.kDrivingMotorReduction;
-    double steeringReduction = 150.0 / 7.0; // MK4i L2
+    double steeringReduction = 150.0 / 7.0; // MK4i L3
     double turningFactor = (2 * Math.PI) / steeringReduction;
 
     // --- DRIVING CONFIG ---

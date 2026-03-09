@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
   private CANcoder cancoder2;
   private CANcoder cancoder3;
 
-
   private final Field2d m_field = new Field2d();
 
   public Robot() {
@@ -54,24 +53,24 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer. This will perform all our button bindings,
-    // and put our
-    // autonomous chooser on the dashboard.
+    // and put our autonomous chooser on the dashboard.
     // Used to track usage of Kitbot code, please do not remove.
     HAL.report(tResourceType.kResourceType_Framework, 10);
-    cancoder = new CANcoder(9);
-    cancoder1 = new CANcoder(10);
-    cancoder2 = new CANcoder(11);
-    cancoder3 = new CANcoder(12);
-    double absolutePosition = cancoder.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
-    double absolutePosition1 = cancoder1.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
-    double absolutePosition2 = cancoder2.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
-    double absolutePosition3 = cancoder3.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
 
-    SmartDashboard.putNumber("CANcoder Absolute Position", absolutePosition); // front right 
-    SmartDashboard.putNumber("CANcoder Absolute Position1", absolutePosition1); // back right
-    SmartDashboard.putNumber("CANcoder Absolute Position2", absolutePosition2); // front left
-    SmartDashboard.putNumber("CANcoder Absolute Position3", absolutePosition3); // back left 
+    // uncomment to track CANcoder positions and set new offsets if needed
+    // cancoder = new CANcoder(9);
+    // cancoder1 = new CANcoder(10);
+    // cancoder2 = new CANcoder(11);
+    // cancoder3 = new CANcoder(12);
+    // double absolutePosition = cancoder.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    // double absolutePosition1 = cancoder1.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    // double absolutePosition2 = cancoder2.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
+    // double absolutePosition3 = cancoder3.getAbsolutePosition().getValueAsDouble() * 360.0; // Convert to degrees
 
+    // SmartDashboard.putNumber("CANcoder Absolute Position", absolutePosition); // front right 
+    // SmartDashboard.putNumber("CANcoder Absolute Position1", absolutePosition1); // back right
+    // SmartDashboard.putNumber("CANcoder Absolute Position2", absolutePosition2); // front left
+    // SmartDashboard.putNumber("CANcoder Absolute Position3", absolutePosition3); // back left 
 
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putData("Swerve Drive", new Sendable() {

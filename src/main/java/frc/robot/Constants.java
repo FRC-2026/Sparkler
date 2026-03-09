@@ -22,9 +22,10 @@ public final class Constants {
   public static final double maxspeed = Units.feetToMeters(5.5);
   public static final class FuelConstants {
     // Motor controller IDs for Fuel Mechanism motors
-    public static final int FEEDER_MOTOR_ID = 13;
-    public static final int INTAKE_LAUNCHER_MOTOR_ID = 14;
-
+    public static final int LAUNCHER_MOTOR_ID = 13;
+    public static final int SPIN_UP_MOTOR_ID = 14;
+    public static final int INTAKE_INTAKE_MOTOR_ID = 15;
+    public static final int INTAKE_ARM_MOTOR_ID = 16;
     
     // Current limit and nominal voltage for fuel mechanism motors.
     public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
@@ -33,11 +34,10 @@ public final class Constants {
     // Voltage values for various fuel operations. These values may need to be tuned
     // based on exact robot construction.
     // See the Software Guide for tuning information
-    public static final double INTAKING_FEEDER_VOLTAGE = -12;
+    public static final double INTAKING_ARM_VOLTAGE = 12;
     public static final double INTAKING_INTAKE_VOLTAGE = 10;
-    public static double LAUNCHING_FEEDER_VOLTAGE = 9;
     public static double LAUNCHING_LAUNCHER_VOLTAGE = 10.6;
-    public static double SPIN_UP_FEEDER_VOLTAGE = -6;
+    public static double SPIN_UP_FEEDER_VOLTAGE = 6;
     public static final double SPIN_UP_SECONDS = 1;
   }
 
@@ -46,11 +46,9 @@ public final class Constants {
     // values in the Joystick tab of the Driver Station software
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 1;
-
   }
 
   public final class DriveConstants {
-  
     public static double kMaxSpeedMetersPerSecond = 3.0;
     public static final double kMaxAngularSpeed = 2 * Math.PI; 
 
@@ -93,7 +91,6 @@ public final class Constants {
     public static double kDriveKS; // static voltage
     public static double kDriveKA; // acceleration voltage
   }
-
 
   public static final class OIConstants {
     // may change - controller's usb port

@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import java.io.File;
 
-import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +13,15 @@ import swervelib.parser.SwerveParser;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+
+//red sparkmax
+//turning speed
+//arm intake, pid
+
+
+//paths during comp 
+//vision subsytem
+//
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -45,8 +52,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
-        AHRS navx = (AHRS)swerveDrive.getGyro().getIMU();
-
     }
 
     /**
@@ -58,9 +63,9 @@ public class DriveSubsystem extends SubsystemBase {
      */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean openLoop) {
         // Optional: calculate feedforward voltage for translation
-        // double targetSpeed = translation.getNorm(); // meters/sec
-        // double targetAccel = 0; // could be computed from trajectory
-        // double voltage = driveFeedforward.calculate(targetSpeed, targetAccel);
+        double targetSpeed = translation.getNorm(); // meters/sec
+        double targetAccel = 0; // could be computed from trajectory
+        double voltage = driveFeedforward.calculate(targetSpeed, targetAccel);
 
         swerveDrive.drive(translation, rotation, true, openLoop);
     }
@@ -75,7 +80,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroGyro() {
         swerveDrive.zeroGyro();
-        System.out.println("Allan sucks");
     }
 
     public void speedIncrease() {   
