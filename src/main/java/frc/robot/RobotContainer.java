@@ -4,6 +4,9 @@ import static frc.robot.Constants.FuelConstants.SPIN_UP_SECONDS;
 import static frc.robot.Constants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,7 +20,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveSubsystem;
-//import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Intake;
 
 /**
  * Modern 2025–2026 RobotContainer for swerve drive with YAGSL.
@@ -26,6 +29,7 @@ public class RobotContainer {
 
     // Subsystems
     private final Shooter ballSubsystem = new Shooter();
+    private final Intake intakeSubsystem = new Intake();
     //private final Intake intake = new Intake();
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
@@ -52,9 +56,18 @@ public class RobotContainer {
                     true,  // field relative
                     false  // closed loop
                 ),
-                m_robotDrive
-            )
-        );
+                m_robotDrive));
+        autoChooser.setDefaultOption("Default Auto", new PathPlannerAuto("DefaultAuto"));
+        autoChooser.addOption("My Auto", new PathPlannerAuto("MyAuto"));
+
+        NamedCommands.registerCommand("intake", intakeSubsystem.intakeCommand());
+        NamedCommands.registerCommand("eject", intakeSubsystem.ejectCommand());
+        NamedCommands.registerCommand("launch", ballSubsystem.launchCommand());
+        NamedCommands.registerCommand("spinUp", ballSubsystem.spinUpCommand());
+        NamedCommands.registerCommand("intakeArmDown", intakeSubsystem.intakeArmCommand());
+        NamedCommands.registerCommand("intakeArmUp", intakeSubsystem.reverseIntakeArmCommand());
+
+
     }
 
     /**
@@ -95,21 +108,22 @@ public class RobotContainer {
                 .andThen(ballSubsystem.launchCommand())
                 .finallyDo(() -> ballSubsystem.stop()));
 
-        // // While the A button is held, eject fuel 
-        // operatorController.b()
-        //     .whileTrue(ballSubsystem.runEnd(() -> intake.eject(), () -> ballSubsystem.stop()));
+        //Uncommented code (changed intake.eject to intakeSubsystem.eject and etc 
+        // While the A button is held, eject fuel 
+        operatorController.b()
+             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> ballSubsystem.stop()));
         
-        // // While the Y button on operator controller is held, intake Fuel
-        // operatorController.a()
-        //     .whileTrue(ballSubsystem.runEnd(() -> intake.intake(), () -> ballSubsystem.stop()));
+        // While the Y button on operator controller is held, intake Fuel
+        operatorController.a()
+             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> ballSubsystem.stop()));
         
-        // // Move intake arm down
-        // operatorController.x()
-        //     .whileTrue(ballSubsystem.runEnd(() -> intake.intakeArm(), () -> ballSubsystem.stop()));
+        // Move intake arm down
+        operatorController.x()
+             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.intakeArm(), () -> ballSubsystem.stop()));
 
-        // // Move intake arm up 
-        // operatorController.y()
-        //     .whileTrue(ballSubsystem.runEnd(() -> intake.reverseIntakeArm(), () -> ballSubsystem.stop()));
+        // Move intake arm up 
+        operatorController.y()
+             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.reverseIntakeArm(), () -> ballSubsystem.stop()));
     }
 
     /**

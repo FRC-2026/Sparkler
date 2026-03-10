@@ -34,10 +34,10 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  private CANcoder cancoder;
-  private CANcoder cancoder1;
-  private CANcoder cancoder2;
-  private CANcoder cancoder3;
+  // private CANcoder cancoder;
+  // private CANcoder cancoder1;
+  // private CANcoder cancoder2;
+  // private CANcoder cancoder3;
 
   private final Field2d m_field = new Field2d();
 
