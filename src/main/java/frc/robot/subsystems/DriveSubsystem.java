@@ -109,7 +109,7 @@ public class DriveSubsystem extends SubsystemBase {
         double targetAccel = 0; // could be computed from trajectory
         double voltage = driveFeedforward.calculate(targetSpeed, targetAccel);
 
-        swerveDrive.drive(translation, rotation, true, openLoop);
+        swerveDrive.drive(translation, rotation, fieldRelative, openLoop);
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
