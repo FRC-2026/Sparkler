@@ -16,7 +16,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -66,12 +69,74 @@ public class RobotContainer {
         autoChooser.addOption("Starting Point 3, Shoot, Collect, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot, Collect, Shoot").schedule()));
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        NamedCommands.registerCommand("intake", intakeSubsystem.intakeCommand());
-        NamedCommands.registerCommand("eject", intakeSubsystem.ejectCommand());
-        NamedCommands.registerCommand("launch", ballSubsystem.launchCommand());
-        NamedCommands.registerCommand("spinUp", ballSubsystem.spinUpCommand());
-        NamedCommands.registerCommand("intakeArmDown", intakeSubsystem.intakeArmCommand());
-        NamedCommands.registerCommand("intakeArmUp", intakeSubsystem.reverseIntakeArmCommand());
+        NamedCommands.registerCommand("i", intakeSubsystem.intakeCommand());
+        NamedCommands.registerCommand("e", intakeSubsystem.ejectCommand());
+        NamedCommands.registerCommand("l", ballSubsystem.launchCommand());
+        NamedCommands.registerCommand("sUp", ballSubsystem.spinUpCommand());
+        NamedCommands.registerCommand("iAD", intakeSubsystem.intakeArmCommand());
+        NamedCommands.registerCommand("iAU", intakeSubsystem.reverseIntakeArmCommand());
+
+
+        //Intake commands for auto/pathplanner
+        NamedCommands.registerCommand(
+            "intake",
+            new ParallelDeadlineGroup(
+                new WaitCommand(2), // how long you want the intake to run
+                new StartEndCommand(
+                    () -> intakeSubsystem.intake(),  // start intaking
+                    () -> intakeSubsystem.stopIntake(),    // stop motors at the end
+                    intakeSubsystem                  // the subsystem the command requires
+                )
+            )
+        );
+        NamedCommands.registerCommand(
+            "intakeArmDown",
+            new ParallelDeadlineGroup(
+                new WaitCommand(2), //Assumuption CHANGE LATER
+                new StartEndCommand(
+                    () -> intakeSubsystem.intakeArm(),               // move arm down
+                    () -> intakeSubsystem.stopIntakeArm(),    // stop arm motor
+                    intakeSubsystem
+                )
+            )
+        );
+        NamedCommands.registerCommand(
+            "intakeArmUp",
+            new ParallelDeadlineGroup(
+                new WaitCommand(2),
+                new StartEndCommand(
+                    () -> intakeSubsystem.reverseIntakeArm(),        // move arm up
+                    () -> intakeSubsystem.stopIntakeArm(),    // stop arm motor
+                    intakeSubsystem
+                )
+            )
+        );
+        
+
+        //Shoot commands for auto/pathplanner
+        NamedCommands.registerCommand(
+            "shootMin",
+            new ParallelDeadlineGroup(
+                new WaitCommand(5), //Shoots for 5 (for Starting with 8)
+                new StartEndCommand(
+                    () -> ballSubsystem.spinUp(),
+                    () -> ballSubsystem.stop(),
+                    ballSubsystem
+                )
+            )
+        );
+
+        NamedCommands.registerCommand(
+            "shootMax",
+            new ParallelDeadlineGroup(
+                new WaitCommand(9), //Shoots for 9 (with 10-16 balls)
+                new StartEndCommand(
+                    () -> ballSubsystem.spinUp(),
+                    () -> ballSubsystem.stop(),
+                    ballSubsystem
+                )
+            )
+        );
     }
 
     /**

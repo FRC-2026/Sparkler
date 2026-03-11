@@ -114,4 +114,5 @@ public final class Constants {
     public static final double kFreeCurrentA = 1.5;        // Free current in Amps
     public static final double kMotorResistance = 12 / kStallCurrentA; // Ohms  }
   }
+
 }
