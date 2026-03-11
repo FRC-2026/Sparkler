@@ -58,6 +58,16 @@ public class Intake extends SubsystemBase {
             .setVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_INTAKE_VOLTAGE));
     }
 
+    
+    // A method to stop the rollers
+    public void stopRoller() {
+        intakeRoller.stopMotor();
+    }
+
+    public void stopArm() {
+        intakeArm.stopMotor();
+    }
+
     public Command intakeCommand() {
     return this.run(() -> intake());
   }

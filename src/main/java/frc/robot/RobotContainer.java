@@ -104,16 +104,16 @@ public class RobotContainer {
                 .finallyDo(() -> ballSubsystem.stop()));
 
         operatorController.b()
-             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> ballSubsystem.stop()));
+             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> intakeSubsystem.stopRoller()));
 
         operatorController.a()
-             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> ballSubsystem.stop()));
+             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> intakeSubsystem.stopRoller()));
 
         operatorController.x()
-             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.intakeArm(), () -> ballSubsystem.stop()));
+             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intakeArm(), () -> intakeSubsystem.stopArm()));
 
         operatorController.y()
-             .whileTrue(ballSubsystem.runEnd(() -> intakeSubsystem.reverseIntakeArm(), () -> ballSubsystem.stop()));
+            .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.reverseIntakeArm(), () -> intakeSubsystem.stopArm()));
     }
 
     /**
