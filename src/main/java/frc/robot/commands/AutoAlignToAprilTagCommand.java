@@ -37,3 +37,5 @@
 //             Math.abs(vision.getTargetYaw()) < 0.02; // done within 5cm / 2°
 //      }
 // }
+
+// 0.0020645

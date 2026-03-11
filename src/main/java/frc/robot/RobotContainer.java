@@ -45,10 +45,10 @@ public class RobotContainer {
             new RunCommand(
                 () -> m_robotDrive.drive(
                     new Translation2d(
-                        -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband)
+                        -MathUtil.applyDeadband(driverController.getLeftY()*Math.PI, OIConstants.kDriveDeadband), // *DriveConstants.kMaxSpeedMetersPerSecond
+                        -MathUtil.applyDeadband(driverController.getLeftX()*Math.PI, OIConstants.kDriveDeadband)
                     ),
-                    -MathUtil.applyDeadband(driverController.getRightX()*DriveConstants.kMaxAngularSpeed, OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(driverController.getRightX()*Math.PI, OIConstants.kDriveDeadband),
                     true,  // field relative
                     false  // closed loop
                 ),

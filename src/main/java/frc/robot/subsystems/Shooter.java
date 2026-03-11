@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
   // constants used if nothing inside smart dashboard
   public void spinUp() {
     spinUpFeeder
-    .setVoltage(SmartDashboard.getNumber("Spin up feeder value", SPIN_UP_FEEDER_VOLTAGE));
+    .setVoltage(-1 * SmartDashboard.getNumber("Spin up feeder value", SPIN_UP_FEEDER_VOLTAGE));
 
     launchingLaunch
     .setVoltage(SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));

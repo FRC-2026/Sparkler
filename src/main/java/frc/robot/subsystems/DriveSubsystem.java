@@ -80,6 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroGyro() {
         swerveDrive.zeroGyro();
+        System.out.println("Gyro reset");
     }
 
     public void speedIncrease() {   
