@@ -66,6 +66,10 @@ public class Intake extends SubsystemBase {
     return this.run(() -> intakeArm());
   }
 
+    public Command reverseIntakeArmCommand() {
+    return this.run(() -> reverseIntakeArm());
+  }
+
     public Command ejectCommand() {
     return this.run(() -> eject());
   }
