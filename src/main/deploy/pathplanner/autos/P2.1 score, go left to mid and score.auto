@@ -13,7 +13,7 @@
         {
           "type": "named",
           "data": {
-            "name": "launch"
+            "name": "shootMin"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "named",
           "data": {
-            "name": "intake"
+            "name": "intakeArmDown"
           }
         },
         {
@@ -43,7 +43,13 @@
         {
           "type": "named",
           "data": {
-            "name": null
+            "name": "intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeArmUp"
           }
         },
         {
@@ -61,7 +67,7 @@
         {
           "type": "named",
           "data": {
-            "name": "launch"
+            "name": "shootMin"
           }
         }
       ]
