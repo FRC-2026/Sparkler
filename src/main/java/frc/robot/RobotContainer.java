@@ -52,7 +52,7 @@ public class RobotContainer {
             new RunCommand(
                 () -> m_robotDrive.drive(
                     new Translation2d(
-                        -MathUtil.applyDeadband(driverController.getLeftY()*Math.PI, OIConstants.kDriveDeadband), // *DriveConstants.kMaxSpeedMetersPerSecond
+                        -MathUtil.applyDeadband(driverController.getLeftY()*Math.PI, OIConstants.kDriveDeadband),//why Math.pi??? 
                         -MathUtil.applyDeadband(driverController.getLeftX()*Math.PI, OIConstants.kDriveDeadband)
                     ),
                     -MathUtil.applyDeadband(driverController.getRightX()*Math.PI, OIConstants.kDriveDeadband),
@@ -174,9 +174,11 @@ public class RobotContainer {
         operatorController.a()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> intakeSubsystem.stopRoller()));
 
+        // makes arm go down
         operatorController.x()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intakeArm(), () -> intakeSubsystem.stopArm()));
 
+        // makes arm go up
         operatorController.y()
             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.reverseIntakeArm(), () -> intakeSubsystem.stopArm()));
     }

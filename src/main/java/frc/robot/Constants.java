@@ -34,7 +34,7 @@ public final class Constants {
     // Voltage values for various fuel operations. These values may need to be tuned
     // based on exact robot construction.
     // See the Software Guide for tuning information
-    public static final double INTAKING_ARM_VOLTAGE = 10;
+    public static final double INTAKING_ARM_VOLTAGE = 5;
     public static final double INTAKING_INTAKE_VOLTAGE = 10;
     public static double LAUNCHING_LAUNCHER_VOLTAGE = 10.6;
     public static double SPIN_UP_FEEDER_VOLTAGE = 6;
