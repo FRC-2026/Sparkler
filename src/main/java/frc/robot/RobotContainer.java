@@ -64,6 +64,13 @@ public class RobotContainer {
         autoChooser.addOption("Starting Point 3, Taxi", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Taxi").schedule()));
         autoChooser.addOption("Starting Point 3, Shoot", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Shoot").schedule()));
         autoChooser.addOption("Starting Point 3, Shoot, Collect, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot, Collect, Shoot").schedule()));
+
+        autoChooser.addOption("Starting Point 1, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Feed Human").schedule()));
+        autoChooser.addOption("Starting Point 3, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Feed Human").schedule()));
+        autoChooser.addOption("Starting Point 1, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good").schedule()));
+        autoChooser.addOption("Starting Point 2, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
+        autoChooser.addOption("Starting Point 3, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good").schedule()));
+
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         NamedCommands.registerCommand("i", intakeSubsystem.intakeCommand());
