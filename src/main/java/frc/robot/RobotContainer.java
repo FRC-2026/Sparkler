@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static frc.robot.Constants.FuelConstants.SPIN_UP_SECONDS;
-import static frc.robot.Constants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -14,18 +12,17 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
 /**
  * Modern 2025–2026 RobotContainer for swerve drive with YAGSL.
@@ -120,7 +117,7 @@ public class RobotContainer {
                 new WaitCommand(5), //Shoots for 5 (for Starting with 8)
                 new StartEndCommand(
                     () -> ballSubsystem.spinUp(),
-                    () -> ballSubsystem.stop(),
+                    () -> ballSubsystem.stopSpinUP(),
                     ballSubsystem
                 )
             )
@@ -132,7 +129,7 @@ public class RobotContainer {
                 new WaitCommand(9), //Shoots for 9 (with 10-16 balls)
                 new StartEndCommand(
                     () -> ballSubsystem.spinUp(),
-                    () -> ballSubsystem.stop(),
+                    () -> ballSubsystem.stopSpinUP(),
                     ballSubsystem
                 )
             )
@@ -163,8 +160,29 @@ public class RobotContainer {
         operatorController.rightBumper()
             .onTrue(new InstantCommand(() -> ballSubsystem.speedIncrease(), ballSubsystem));
 
-        operatorController.leftTrigger()
-            .whileTrue(ballSubsystem.spinUpCommand().withTimeout(SPIN_UP_SECONDS)
+        operatorController.rightTrigger()//launcher
+            .whileTrue(
+                Commands.deadline(
+                Commands.sequence(
+                    Commands.waitSeconds(2), //wait 2 second before running the reverseLanchCommand
+                    Commands.run(() -> ballSubsystem.launchCommand(), ballSubsystem)
+                ),
+                Commands.run(() -> ballSubsystem.reverseLaunchCommand(), ballSubsystem),
+                Commands.run(() -> ballSubsystem.spinUpCommand(), ballSubsystem)
+            )
+            ).onFalse(
+                Commands.runOnce(() -> {
+                    ballSubsystem.stopSpinUP();
+                    ballSubsystem.stopLaunch();
+            })
+        );
+
+            // ballSubsystem.spinUpCommand().withTimeout(SPIN_UP_SECONDS)
+            //     .andThen(ballSubsystem.launchCommand())
+            //     .finallyDo(() -> ballSubsystem.stop()));
+
+        operatorController.leftTrigger()//indexer spin
+            .whileTrue(ballSubsystem.spinUpCommand()
                 .andThen(ballSubsystem.launchCommand())
                 .finallyDo(() -> ballSubsystem.stop()));
 

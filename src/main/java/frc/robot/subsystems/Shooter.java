@@ -52,9 +52,21 @@ public class Shooter extends SubsystemBase {
   }
 
   // A method to stop the rollers
-  public void stop() {
+  public void stopLaunch() {
     launchingLaunch.stopMotor();
+  }
+
+  public void stopSpinUP()
+  {
     spinUpFeeder.stopMotor();
+  }
+
+  public void stop()
+  {
+    spinUpFeeder.stopMotor();
+    launchingLaunch.stopMotor();
+
+
   }
 
   // A method to spin up the launcher roller while spinning the feeder roller to
@@ -64,8 +76,15 @@ public class Shooter extends SubsystemBase {
     spinUpFeeder
     .setVoltage(-1 * SmartDashboard.getNumber("Spin up feeder value", SPIN_UP_FEEDER_VOLTAGE));
 
+    // launchingLaunch
+    // .setVoltage(SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+  }
+
+  public void launchReverse()
+  {
     launchingLaunch
-    .setVoltage(SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+      .setVoltage(-1*SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+
   }
 
   // A command factory to turn the spinUp method into a command that requires this
@@ -79,6 +98,11 @@ public class Shooter extends SubsystemBase {
   public Command launchCommand() {
     return this.run(() -> launch());
   }
+
+  public Command reverseLaunchCommand(){
+    return this.run(()-> launchReverse());
+  }
+  
 
   @Override
   public void periodic() {
