@@ -70,6 +70,7 @@ public class RobotContainer {
         autoChooser.addOption("Starting Point 1, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good").schedule()));
         autoChooser.addOption("Starting Point 2, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
         autoChooser.addOption("Starting Point 3, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good").schedule()));
+        autoChooser.addOption("Test rotate", new InstantCommand(() -> new PathPlannerAuto("Test rotate").schedule()));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -167,22 +168,22 @@ public class RobotContainer {
         operatorController.rightBumper()
             .onTrue(new InstantCommand(() -> ballSubsystem.speedIncrease(), ballSubsystem));
 
-        operatorController.rightTrigger()//launcher
-            .whileTrue(
-                Commands.deadline(
-                Commands.sequence(
-                    Commands.waitSeconds(2), //wait 2 second before running the reverseLanchCommand
-                    Commands.run(() -> ballSubsystem.launchCommand(), ballSubsystem)
-                ),
-                Commands.run(() -> ballSubsystem.reverseLaunchCommand(), ballSubsystem),
-                Commands.run(() -> ballSubsystem.spinUpCommand(), ballSubsystem)
-            )
-            ).onFalse(
-                Commands.runOnce(() -> {
-                    ballSubsystem.stopSpinUP();
-                    ballSubsystem.stopLaunch();
-            })
-        );
+        // operatorController.rightTrigger()//launcher
+        //     .whileTrue(
+        //         Commands.deadline(
+        //         Commands.sequence(
+        //             Commands.waitSeconds(2), //wait 2 second before running the reverseLanchCommand
+        //             Commands.run(() -> ballSubsystem.launchCommand(), ballSubsystem)
+        //         ),
+        //         Commands.run(() -> ballSubsystem.reverseLaunchCommand(), ballSubsystem),
+        //         Commands.run(() -> ballSubsystem.spinUpCommand(), ballSubsystem)
+        //     )
+        //     ).onFalse(
+        //         Commands.runOnce(() -> {
+        //             ballSubsystem.stopSpinUP();
+        //             ballSubsystem.stopLaunch();
+        //     })
+        // );
 
             // ballSubsystem.spinUpCommand().withTimeout(SPIN_UP_SECONDS)
             //     .andThen(ballSubsystem.launchCommand())
