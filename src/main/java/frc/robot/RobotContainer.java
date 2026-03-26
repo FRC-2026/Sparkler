@@ -190,9 +190,9 @@ public class RobotContainer {
             //     .finallyDo(() -> ballSubsystem.stop()));
 
         operatorController.leftTrigger()//indexer spin
-            .whileTrue(ballSubsystem.spinUpCommand()
-                .andThen(ballSubsystem.launchCommand())
-                .finallyDo(() -> ballSubsystem.stop()));
+            .whileTrue(ballSubsystem.spinUpCommand().withTimeout(1)
+            .andThen(ballSubsystem.launchCommand())
+            .finallyDo(() -> ballSubsystem.stop()));
 
         operatorController.b()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> intakeSubsystem.stopRoller()));
