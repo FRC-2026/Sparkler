@@ -14,6 +14,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,8 +47,12 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setFPS(60);
-    camera.setResolution(100, 60);
+    camera.setPixelFormat(PixelFormat.kMJPEG);
+    camera.setResolution(320, 240);
+    camera.setExposureManual(40);
+    camera.setWhiteBalanceAuto();
+    camera.setFPS(30);
+
   }
 
   /**
