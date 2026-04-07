@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 
 /**
  * Modern 2025–2026 RobotContainer for swerve drive with YAGSL.
@@ -30,7 +30,7 @@ import frc.robot.subsystems.Shooter;
 public class RobotContainer {
     
     // Subsystems
-    private final Shooter ballSubsystem = new Shooter();
+    private final Flywheel ballSubsystem = new Flywheel();
     private final Intake intakeSubsystem = new Intake();
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
@@ -124,8 +124,8 @@ public class RobotContainer {
             new ParallelDeadlineGroup(
                 new WaitCommand(5), //Shoots for 5 (for Starting with 8)
                 new StartEndCommand(
-                    () -> ballSubsystem.spinUp(),
-                    () -> ballSubsystem.stopSpinUP(),
+                    () -> ballSubsystem.runFlywheel(),
+                    () -> ballSubsystem.stopFlywheel(),
                     ballSubsystem
                 )
             )
@@ -136,8 +136,8 @@ public class RobotContainer {
             new ParallelDeadlineGroup(
                 new WaitCommand(9), //Shoots for 9 (with 10-16 balls)
                 new StartEndCommand(
-                    () -> ballSubsystem.spinUp(),
-                    () -> ballSubsystem.stopSpinUP(),
+                    () -> ballSubsystem.runFlywheel(),
+                    () -> ballSubsystem.stopFlywheel(),
                     ballSubsystem
                 )
             )
@@ -163,10 +163,11 @@ public class RobotContainer {
 
         /* OPERATOR CONTROLLER */
         operatorController.leftBumper()
-            .onTrue(new InstantCommand(() -> ballSubsystem.speedDecrease(), ballSubsystem));
+            .onTrue(new InstantCommand(() -> ballSubsystem.speedDecrease(100,-10), ballSubsystem));
 
         operatorController.rightBumper()
-            .onTrue(new InstantCommand(() -> ballSubsystem.speedIncrease(), ballSubsystem));
+            .onTrue(new InstantCommand(() -> ballSubsystem.speedIncrease(100,-5800), ballSubsystem));
+
 
         // operatorController.rightTrigger()//launcher
         //     .whileTrue(
@@ -189,10 +190,19 @@ public class RobotContainer {
             //     .andThen(ballSubsystem.launchCommand())
             //     .finallyDo(() -> ballSubsystem.stop()));
 
-        operatorController.leftTrigger()//indexer spin
-            .whileTrue(ballSubsystem.spinUpCommand().withTimeout(1)
-            .andThen(ballSubsystem.launchCommand())
-            .finallyDo(() -> ballSubsystem.stop()));
+        operatorController.leftTrigger()
+        .whileTrue(ballSubsystem.spinUpCommand().withTimeout(2)
+        .andThen(ballSubsystem.launchCommand())
+        .finallyDo(() -> ballSubsystem.stop()));
+        // .whileTrue(
+        //     new RunCommand(() -> {
+        //         ballSubsystem.runFlywheel();
+        //         ballSubsystem.launchCommand();
+        //     }, ballSubsystem)
+        // )
+        // .onFalse(
+        //     new InstantCommand(() -> ballSubsystem.stopFlywheel(), ballSubsystem)
+        // );
 
         operatorController.b()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> intakeSubsystem.stopRoller()));

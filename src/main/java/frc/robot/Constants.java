@@ -35,8 +35,8 @@ public final class Constants {
     // based on exact robot construction.
     // See the Software Guide for tuning information
     public static final double INTAKING_ARM_VOLTAGE = 5;
-    public static final double INTAKING_INTAKE_VOLTAGE = 10;
-    public static double LAUNCHING_LAUNCHER_VOLTAGE = 10.6;
+    public static final double INTAKING_INTAKE_VOLTAGE = 6;
+    public static double LAUNCHING_LAUNCHER_VOLTAGE = 9.6;
     public static double SPIN_UP_FEEDER_VOLTAGE = 12;
     public static final double SPIN_UP_SECONDS = 1;
   }
