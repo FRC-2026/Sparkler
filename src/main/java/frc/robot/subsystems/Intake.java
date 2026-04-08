@@ -17,20 +17,20 @@ import static frc.robot.Constants.FuelConstants.*;
 
 public class Intake extends SubsystemBase {
     private final SparkMax intakeRoller;
-    private final SparkMax intakeArm;
+    private final SparkMax indexArm;
 
     @SuppressWarnings("removal")
     public Intake() {
         intakeRoller = new SparkMax(INTAKE_INTAKE_MOTOR_ID, MotorType.kBrushless);
-        intakeArm = new SparkMax(INTAKE_ARM_MOTOR_ID, MotorType.kBrushless);
+        indexArm = new SparkMax(INTAKE_ARM_MOTOR_ID, MotorType.kBrushless);
 
         SparkMaxConfig intakeRollerConfig = new SparkMaxConfig();
         intakeRollerConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
         intakeRoller.configure(intakeRollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        SparkMaxConfig intakeArmConfig = new SparkMaxConfig();
-        intakeArmConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
-        intakeArm.configure(intakeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        SparkMaxConfig indexArmConfig = new SparkMaxConfig();
+        indexArmConfig.smartCurrentLimit(FEEDER_MOTOR_CURRENT_LIMIT);
+        indexArm.configure(indexArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         SmartDashboard.putNumber("Intaking feeder roller value", INTAKING_INTAKE_VOLTAGE);
         SmartDashboard.putNumber("Intaking intake roller value", INTAKING_ARM_VOLTAGE);
@@ -43,7 +43,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void stopIntakeArm() {
-      intakeArm.stopMotor();
+      indexArm.stopMotor();
     }
 
 
@@ -54,20 +54,14 @@ public class Intake extends SubsystemBase {
 
     // A method to move intake arm
 
-    public void intakeArm2()
-    {
-        intakeArm.setVoltage(0.2);
 
-    }
-
-
-    public void intakeArm() {
-        intakeArm.setVoltage(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
+    public void indexDown() {
+        indexArm.setVoltage(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
     }
 
     // A method to move intake arm
-    public void reverseIntakeArm() {
-        intakeArm.setVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
+    public void reverseIndexArm() {
+        indexArm.setVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
     }
 
     // A method to set the rollers to values for ejecting fuel out the intake. Uses
@@ -84,20 +78,20 @@ public class Intake extends SubsystemBase {
         intakeRoller.stopMotor();
     }
 
-    public void stopArm() {
-        intakeArm.stopMotor();
+    public void stopIndexArm() {
+        indexArm.stopMotor();
     }
 
     public Command intakeCommand() {
     return this.run(() -> intake());
   }
 
-    public Command intakeArmCommand() {
-    return this.run(() -> intakeArm());
+    public Command indexArmCommand() {
+    return this.run(() -> indexDown());
   }
 
-    public Command reverseIntakeArmCommand() {
-    return this.run(() -> reverseIntakeArm());
+    public Command reverseIndexArmCommand() {
+    return this.run(() -> reverseIndexArm());
   }
 
     public Command ejectCommand() {

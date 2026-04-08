@@ -78,8 +78,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("e", intakeSubsystem.ejectCommand());
         NamedCommands.registerCommand("l", ballSubsystem.launchCommand());
         NamedCommands.registerCommand("sUp", ballSubsystem.spinUpCommand());
-        NamedCommands.registerCommand("iAD", intakeSubsystem.intakeArmCommand());
-        NamedCommands.registerCommand("iAU", intakeSubsystem.reverseIntakeArmCommand());
+        NamedCommands.registerCommand("iAD", intakeSubsystem.indexArmCommand());
+        NamedCommands.registerCommand("iAU", intakeSubsystem.reverseIndexArmCommand());
 
 
         //Intake commands for auto/pathplanner
@@ -99,7 +99,7 @@ public class RobotContainer {
             new ParallelDeadlineGroup(
                 new WaitCommand(2), //Assumuption CHANGE LATER
                 new StartEndCommand(
-                    () -> intakeSubsystem.intakeArm(),               // move arm down
+                    () -> intakeSubsystem.indexDown(),               // move arm down
                     () -> intakeSubsystem.stopIntakeArm(),    // stop arm motor
                     intakeSubsystem
                 )
@@ -110,7 +110,7 @@ public class RobotContainer {
             new ParallelDeadlineGroup(
                 new WaitCommand(2),
                 new StartEndCommand(
-                    () -> intakeSubsystem.reverseIntakeArm(),        // move arm up
+                    () -> intakeSubsystem.reverseIndexArm(),        // move arm up
                     () -> intakeSubsystem.stopIntakeArm(),    // stop arm motor
                     intakeSubsystem
                 )
@@ -194,6 +194,35 @@ public class RobotContainer {
         .whileTrue(ballSubsystem.spinUpCommand().withTimeout(2)
         .andThen(ballSubsystem.launchCommand())
         .finallyDo(() -> ballSubsystem.stop()));
+
+        // operatorController.x()
+        // .whileTrue(ballSubsystem.spinUpCommand())
+        // .whileTrue(intakeSubsystem.indexArmCommand().withTimeout(2)
+        // .andThen(ballSubsystem.reverseLaunchCommand())
+        // .finallyDo(() -> ballSubsystem.stop())
+        // .finallyDo(() -> intakeSubsystem.stopIndexArm()));
+
+        operatorController.x()
+        .whileTrue(
+            // spin up rollers accelerate ~1.2 secs
+            ballSubsystem.spinUpCommand()
+            // blue launcher and index reverse for 2 seconds to stop balls from shooting out
+            .andThen(ballSubsystem.reverseLaunchCommand())
+            .andThen(intakeSubsystem.indexArmCommand().withTimeout(2))
+            // blue launcher and index go forward for balls to shoot 
+            // NOTE: reverse index arm is flipped kinda confusing
+            .andThen(intakeSubsystem.reverseIndexArmCommand())
+            .andThen(ballSubsystem.launchCommand())
+                
+            .finallyDo(() -> {
+                ballSubsystem.stop();
+                intakeSubsystem.stopIndexArm();
+            })
+        );
+
+
+
+
         // .whileTrue(
         //     new RunCommand(() -> {
         //         ballSubsystem.runFlywheel();
@@ -210,13 +239,13 @@ public class RobotContainer {
         operatorController.a()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> intakeSubsystem.stopRoller()));
 
-        // makes arm go down
-        operatorController.x()
-             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intakeArm(), () -> intakeSubsystem.stopArm()));
+        // // makes arm go down
+        // operatorController.x()
+        //      .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.indexArm(), () -> intakeSubsystem.stopIndexArm()));
 
-        // makes arm go up
+        // move index to roll down
         operatorController.y()
-            .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.reverseIntakeArm(), () -> intakeSubsystem.stopArm()));
+            .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.indexDown(), () -> intakeSubsystem.stopIndexArm()));
     }
 
     /**

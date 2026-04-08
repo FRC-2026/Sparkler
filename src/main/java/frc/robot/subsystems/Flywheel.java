@@ -29,6 +29,11 @@ public class Flywheel extends SubsystemBase {
 
     private double targetRPM = -3000; // default target RPM
 
+    @Override
+    public void periodic() {
+        update(); 
+    }
+
     public Flywheel() {
         // Initialize motors
         spinUpFeeder = new SparkFlex(SPIN_UP_MOTOR_ID, MotorType.kBrushless);
@@ -57,7 +62,7 @@ public class Flywheel extends SubsystemBase {
         // Closed-loop PID + feedforward
         feederConfig.closedLoop
             .pid(0.0012, 0.00001, 0.00001)
-            .feedForward.kS(0.2).kV(0.0025); // feedforward (tune for your RPM)
+            .feedForward.kS(0.2).kV(0.0025).kA(0.0002); // feedforward (tune for your RPM)
 
         spinUpFeeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -67,6 +72,8 @@ public class Flywheel extends SubsystemBase {
         // Optional: invert spinUpFeeder if it spins wrong way
         // spinUpFeeder.setInverted(true);
     }
+
+    
 
     /** Main control loop for flywheel */
     public void runFlywheel() {
@@ -161,4 +168,15 @@ public class Flywheel extends SubsystemBase {
     public Command reverseLaunchCommand(){
       return this.run(()-> launchReverse());
     }
+    
+    public void update() {
+       // double currentRPM = encoder.getVelocity();
+      if(encoder.getVelocity() < targetRPM - 300) {
+        spinUpFeeder.setVoltage(12);  // unleash the vortex
+      } 
+      else {
+          pid.setSetpoint(targetRPM, ControlType.kVelocity);
+      }
+    }
+
 }
