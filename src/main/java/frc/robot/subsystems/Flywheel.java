@@ -170,13 +170,34 @@ public class Flywheel extends SubsystemBase {
     }
     
     public void update() {
-       // double currentRPM = encoder.getVelocity();
-      if(encoder.getVelocity() < targetRPM - 300) {
-        spinUpFeeder.setVoltage(12);  // unleash the vortex
-      } 
-      else {
-          pid.setSetpoint(targetRPM, ControlType.kVelocity);
+      //  // double currentRPM = encoder.getVelocity();
+      // if(encoder.getVelocity() < targetRPM - 300) {
+      //   spinUpFeeder.setVoltage(12);  // unleash the vortex
+      // } 
+      // else {
+      //     pid.setSetpoint(targetRPM, ControlType.kVelocity);
+      // }
+    }
+
+    public boolean atSpeed()
+    {
+      double absoluteCurrent = Math.abs(encoder.getVelocity());
+      if(Math.abs(absoluteCurrent-targetRPM)<100)
+      {
+        return true;
+      }
+      else
+      {
+        return false;
       }
     }
 
+    
+
 }
+
+
+
+
+
+

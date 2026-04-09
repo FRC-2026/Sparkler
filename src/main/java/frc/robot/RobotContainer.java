@@ -95,7 +95,7 @@ public class RobotContainer {
             )
         );
         NamedCommands.registerCommand(
-            "intakeArmDown",
+            "indexer",
             new ParallelDeadlineGroup(
                 new WaitCommand(2), //Assumuption CHANGE LATER
                 new StartEndCommand(
@@ -202,25 +202,24 @@ public class RobotContainer {
         // .finallyDo(() -> ballSubsystem.stop())
         // .finallyDo(() -> intakeSubsystem.stopIndexArm()));
 
-        operatorController.x()
-        .whileTrue(
-            // spin up rollers accelerate ~1.2 secs
-            ballSubsystem.spinUpCommand()
-            // blue launcher and index reverse for 2 seconds to stop balls from shooting out
-            .andThen(ballSubsystem.reverseLaunchCommand())
-            .andThen(intakeSubsystem.indexArmCommand().withTimeout(2))
-            // blue launcher and index go forward for balls to shoot 
-            // NOTE: reverse index arm is flipped kinda confusing
-            .andThen(intakeSubsystem.reverseIndexArmCommand())
-            .andThen(ballSubsystem.launchCommand())
-                
-            .finallyDo(() -> {
-                ballSubsystem.stop();
-                intakeSubsystem.stopIndexArm();
-            })
-        );
+    operatorController.x()
+    .whileTrue(
+        // Always spin up flywheel
+        ballSubsystem.spinUpCommand()
 
+        // Small anti-shoot pulse at start
+        .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
+        .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
 
+        // Continuous feeding once at speed
+        .alongWith(intakeSubsystem.reverseIndexArmCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+        .alongWith(ballSubsystem.launchCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+
+        .finallyDo(() -> {
+            ballSubsystem.stop();
+            intakeSubsystem.stopIndexArm();
+        })
+    );
 
 
         // .whileTrue(
