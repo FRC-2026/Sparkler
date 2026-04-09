@@ -67,9 +67,17 @@ public class RobotContainer {
 
         autoChooser.addOption("Starting Point 1, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Feed Human").schedule()));
         autoChooser.addOption("Starting Point 3, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Feed Human").schedule()));
+        
         autoChooser.addOption("Starting Point 1, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good").schedule()));
+        autoChooser.addOption("Starting Point 1, Shoot Good Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good Complex").schedule()));
+
+
         autoChooser.addOption("Starting Point 2, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
+        autoChooser.addOption("Starting Point 2, Shoot Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot Complex").schedule()));
+        
         autoChooser.addOption("Starting Point 3, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good").schedule()));
+        autoChooser.addOption("Starting Point 3, Shoot Good Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good Complex").schedule()));
+
         autoChooser.addOption("Test rotate", new InstantCommand(() -> new PathPlannerAuto("Test rotate").schedule()));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -121,14 +129,39 @@ public class RobotContainer {
         //Shoot commands for auto/pathplanner
         NamedCommands.registerCommand(
             "shootMin",
-            new ParallelDeadlineGroup(
-                new WaitCommand(5), //Shoots for 5 (for Starting with 8)
-                new StartEndCommand(
-                    () -> ballSubsystem.runFlywheel(),
-                    () -> ballSubsystem.stopFlywheel(),
-                    ballSubsystem
+            new StartEndCommand(
+                () -> {
+                    ballSubsystem.runFlywheel();
+                    ballSubsystem.launch();
+                },
+                () -> ballSubsystem.stop(),
+                ballSubsystem
+            ).withTimeout(3)
+        );
+
+        NamedCommands.registerCommand(
+            "shootComplex",
+            ballSubsystem.spinUpCommand()
+
+                // Small anti-shoot pulse at start
+                .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
+                .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
+
+                // Continuous feeding once at speed
+                .alongWith(
+                    intakeSubsystem.reverseIndexArmCommand()
+                        .onlyIf(() -> ballSubsystem.atSpeed())
                 )
-            )
+                .alongWith(
+                    ballSubsystem.launchCommand()
+                        .onlyIf(() -> ballSubsystem.atSpeed())
+                )
+
+                // Cleanup when command ends
+                .finallyDo(() -> {
+                    ballSubsystem.stop();
+                    intakeSubsystem.stopIndexArm();
+                })
         );
 
         NamedCommands.registerCommand(
@@ -202,24 +235,24 @@ public class RobotContainer {
         // .finallyDo(() -> ballSubsystem.stop())
         // .finallyDo(() -> intakeSubsystem.stopIndexArm()));
 
-    operatorController.x()
-    .whileTrue(
-        // Always spin up flywheel
-        ballSubsystem.spinUpCommand()
+        operatorController.x()
+        .whileTrue(
+            // Always spin up flywheel
+            ballSubsystem.spinUpCommand()
 
-        // Small anti-shoot pulse at start
-        .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
-        .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
+            // Small anti-shoot pulse at start
+            .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
+            .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
 
-        // Continuous feeding once at speed
-        .alongWith(intakeSubsystem.reverseIndexArmCommand().onlyIf(() -> ballSubsystem.atSpeed()))
-        .alongWith(ballSubsystem.launchCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+            // Continuous feeding once at speed
+            .alongWith(intakeSubsystem.reverseIndexArmCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+            .alongWith(ballSubsystem.launchCommand().onlyIf(() -> ballSubsystem.atSpeed()))
 
-        .finallyDo(() -> {
-            ballSubsystem.stop();
-            intakeSubsystem.stopIndexArm();
-        })
-    );
+            .finallyDo(() -> {
+                ballSubsystem.stop();
+                intakeSubsystem.stopIndexArm();
+            })
+        );
 
 
         // .whileTrue(
