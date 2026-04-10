@@ -139,30 +139,30 @@ public class RobotContainer {
             ).withTimeout(3)
         );
 
-        NamedCommands.registerCommand(
-            "shootComplex",
-            ballSubsystem.spinUpCommand()
+        // NamedCommands.registerCommand(
+        //     "shootComplex",
+        //     ballSubsystem.spinUpCommand()
 
-                // Small anti-shoot pulse at start
-                .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
-                .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
+        //         // Small anti-shoot pulse at start
+        //         .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
+        //         .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
 
-                // Continuous feeding once at speed
-                .alongWith(
-                    intakeSubsystem.reverseIndexArmCommand()
-                        .onlyIf(() -> ballSubsystem.atSpeed())
-                )
-                .alongWith(
-                    ballSubsystem.launchCommand()
-                        .onlyIf(() -> ballSubsystem.atSpeed())
-                )
+        //         // Continuous feeding once at speed
+        //         .alongWith(
+        //             intakeSubsystem.reverseIndexArmCommand()
+        //                 .onlyIf(() -> ballSubsystem.atSpeed())
+        //         )
+        //         .alongWith(
+        //             ballSubsystem.launchCommand()
+        //                 .onlyIf(() -> ballSubsystem.atSpeed())
+        //         )
 
-                // Cleanup when command ends
-                .finallyDo(() -> {
-                    ballSubsystem.stop();
-                    intakeSubsystem.stopIndexArm();
-                })
-        );
+        //         // Cleanup when command ends
+        //         .finallyDo(() -> {
+        //             ballSubsystem.stop();
+        //             intakeSubsystem.stopIndexArm();
+        //         })
+        // );
 
         NamedCommands.registerCommand(
             "shootMax",
@@ -235,24 +235,24 @@ public class RobotContainer {
         // .finallyDo(() -> ballSubsystem.stop())
         // .finallyDo(() -> intakeSubsystem.stopIndexArm()));
 
-        operatorController.x()
-        .whileTrue(
-            // Always spin up flywheel
-            ballSubsystem.spinUpCommand()
+        // operatorController.x()
+        // .whileTrue(
+        //     // Always spin up flywheel
+        //     ballSubsystem.spinUpCommand()
 
-            // Small anti-shoot pulse at start
-            .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
-            .alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
+        //     // Small anti-shoot pulse at start
+        //     .alongWith(ballSubsystem.reverseLaunchCommand().withTimeout(0.3))
+        //     //.alongWith(intakeSubsystem.indexArmCommand().withTimeout(0.3))
 
-            // Continuous feeding once at speed
-            .alongWith(intakeSubsystem.reverseIndexArmCommand().onlyIf(() -> ballSubsystem.atSpeed()))
-            .alongWith(ballSubsystem.launchCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+        //     // Continuous feeding once at speed
+        //     .alongWith(intakeSubsystem.reverseIndexArmCommand().onlyIf(() -> ballSubsystem.atSpeed()))
+        //    // .alongWith(ballSubsystem.launchCommand().onlyIf(() -> ballSubsystem.atSpeed()))
 
-            .finallyDo(() -> {
-                ballSubsystem.stop();
-                intakeSubsystem.stopIndexArm();
-            })
-        );
+        //     .finallyDo(() -> {
+        //         ballSubsystem.stop();
+        //         intakeSubsystem.stopIndexArm();
+        //     })
+        // );
 
 
         // .whileTrue(
@@ -265,9 +265,11 @@ public class RobotContainer {
         //     new InstantCommand(() -> ballSubsystem.stopFlywheel(), ballSubsystem)
         // );
 
+        // this intakes
         operatorController.b()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.eject(), () -> intakeSubsystem.stopRoller()));
 
+        // this ejects... confusing lol
         operatorController.a()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> intakeSubsystem.stopRoller()));
 
@@ -277,7 +279,7 @@ public class RobotContainer {
 
         // move index to roll down
         operatorController.y()
-            .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.indexDown(), () -> intakeSubsystem.stopIndexArm()));
+            .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.reverseIndexArm(), () -> intakeSubsystem.stopIndexArm()));
     }
 
     /**
