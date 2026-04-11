@@ -59,7 +59,7 @@ public class RobotContainer {
                 m_robotDrive));
 
         // === FIX: Wrap PathPlannerAuto in InstantCommand for dashboard visibility ===
-        autoChooser.setDefaultOption("Default Auto", new InstantCommand(() -> new PathPlannerAuto("DefaultAuto").schedule()));
+        autoChooser.setDefaultOption("Default Auto", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
         autoChooser.addOption("My Auto", new InstantCommand(() -> new PathPlannerAuto("MyAuto").schedule()));
         autoChooser.addOption("Starting Point 3, Taxi", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Taxi").schedule()));
         autoChooser.addOption("Starting Point 3, Shoot", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Shoot").schedule()));
@@ -136,7 +136,7 @@ public class RobotContainer {
                 },
                 () -> ballSubsystem.stop(),
                 ballSubsystem
-            ).withTimeout(3)
+            ).withTimeout(6)
         );
 
         // NamedCommands.registerCommand(
