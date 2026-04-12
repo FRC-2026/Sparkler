@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import org.littletonrobotics.junction.Logger; 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+
 
 
 /**
@@ -38,7 +40,7 @@ import org.littletonrobotics.junction.Logger;
  * project.
  */
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -73,6 +75,7 @@ public class Robot extends TimedRobot {
 
     Logger.start();//starts logging
 
+    Logger.recordMetadata("ProjectName", "MyRobot");
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.

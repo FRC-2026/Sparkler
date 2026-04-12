@@ -30,6 +30,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       private final RelativeEncoder encoder;
 
       private double targetRPM = -3000; // default target RPM
+      private double kP = SmartDashboard.getNumber("kP", 0.0012);
+      private double kI = SmartDashboard.getNumber("kI", 0.00001);
+      private double kD = SmartDashboard.getNumber("kD", 0.00001);
+
 
       @Override
       public void periodic() {
@@ -53,6 +57,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
           // Dashboard default values
           SmartDashboard.putNumber("Target RPM", targetRPM);
+          SmartDashboard.putNumber("kP", kP);
+          SmartDashboard.putNumber("kI", kI);
+          SmartDashboard.putNumber("kD", kD);
 
 
           // Config launchingLaunch motor
@@ -67,7 +74,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
           // Closed-loop PID + feedforward
           feederConfig.closedLoop
-              .pid(0.0022, 0.00001, 0.00001)
+              .pid(kP, kI, kD)
               .feedForward.kS(0.2).kV(0.0025).kA(0.025); // shoul
 
           spinUpFeeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
