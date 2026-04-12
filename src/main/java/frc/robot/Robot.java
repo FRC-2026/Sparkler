@@ -17,11 +17,15 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import org.littletonrobotics.junction.Logger; 
 
 
 /**
@@ -63,6 +67,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+    DataLogManager.start();//command to start the operation
+    DriverStation.startDataLog(DataLogManager.getLog());//addidng all the datas
+
+    Logger.start();//starts logging
+
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     // Used to track usage of Kitbot code, please do not remove.
@@ -118,6 +129,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
