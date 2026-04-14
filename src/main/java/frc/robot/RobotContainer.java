@@ -225,7 +225,7 @@ public class RobotContainer {
 
         operatorController.leftTrigger()
         .whileTrue(ballSubsystem.spinUpCommand().withTimeout(2)
-        .andThen(ballSubsystem.launchCommand())
+        .andThen(ballSubsystem.reverseLaunchCommand())
         .finallyDo(() -> ballSubsystem.stop()));
 
         // operatorController.x()

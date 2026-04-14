@@ -30,9 +30,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       private final RelativeEncoder encoder;
 
       private double targetRPM = -2000; // default target RPM
-      private double kP = SmartDashboard.getNumber("kP",0.18);
-      private double kI = SmartDashboard.getNumber("kI", 0.005);
-      private double kD = SmartDashboard.getNumber("kD", 0.45);
+      private double kP = SmartDashboard.getNumber("kP",0.000000001);
+      private double kI = SmartDashboard.getNumber("kI", 0);
+      private double kD = SmartDashboard.getNumber("kD", 0);
 
 
       @Override
@@ -75,8 +75,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
           // Closed-loop PID + feedforward
           feederConfig.closedLoop
-              .pid(kP, kI, kD)
-              .feedForward.kS(0.2).kV(0.25).kA(0.025); // shoul
+            .pid(0.0004, 0.0000000001, 0.0)
+            .feedForward
+                .kS(0.2)
+                .kV(0.0020)  // tune this
+                .kA(0.0);
 
           spinUpFeeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -109,7 +112,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       /** Stop all motors */
       public void stopFlywheel() {
           spinUpFeeder.set(0);
-          launchingLaunch.set(0);
       }
 
       // A method to stop the rollers
@@ -181,28 +183,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
         return this.run(()-> launchReverse());
       }
       
-      public void update() {
-        //  // double currentRPM = encoder.getVelocity();
-        // if(encoder.getVelocity() < targetRPM - 300) {
-        //   spinUpFeeder.setVoltage(12);  // unleash the vortex
-        // } 
-        // else {
-        //     pid.setSetpoint(targetRPM, ControlType.kVelocity);
-        // }
-      }
 
-      public boolean atSpeed()
-      {
-        double absoluteCurrent = Math.abs(encoder.getVelocity());
-        if(Math.abs(absoluteCurrent-targetRPM)<100)
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
+   
 
 
 
