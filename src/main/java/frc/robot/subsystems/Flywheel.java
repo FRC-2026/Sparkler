@@ -29,15 +29,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       private final SparkClosedLoopController pid;
       private final RelativeEncoder encoder;
 
-      private double targetRPM = -3000; // default target RPM
-      private double kP = SmartDashboard.getNumber("kP", 0.0012);
-      private double kI = SmartDashboard.getNumber("kI", 0.00001);
-      private double kD = SmartDashboard.getNumber("kD", 0.00001);
+      private double targetRPM = -2000; // default target RPM
+      private double kP = SmartDashboard.getNumber("kP",0.18);
+      private double kI = SmartDashboard.getNumber("kI", 0.005);
+      private double kD = SmartDashboard.getNumber("kD", 0.45);
 
 
       @Override
       public void periodic() {
 
+      SmartDashboard.putNumber("FlywheelRPM", getRPM());
       Logger.recordOutput("Flywheel/CurrentRPM", getRPM());
       Logger.recordOutput("Flywheel/TargetRPM", targetRPM);
 
@@ -75,7 +76,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
           // Closed-loop PID + feedforward
           feederConfig.closedLoop
               .pid(kP, kI, kD)
-              .feedForward.kS(0.2).kV(0.0025).kA(0.025); // shoul
+              .feedForward.kS(0.2).kV(0.25).kA(0.025); // shoul
 
           spinUpFeeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
