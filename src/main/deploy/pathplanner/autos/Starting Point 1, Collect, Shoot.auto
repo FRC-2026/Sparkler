@@ -7,7 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Position 2, Shoot"
+            "pathName": "Position 1, Collect"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Position 1, Collect 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Position 1, Collect 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Position 1, Collect 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Position 1, Collect 5"
           }
         },
         {

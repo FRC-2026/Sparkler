@@ -23,6 +23,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LauncherSubsystem;
 
 /**
  * Modern 2025–2026 RobotContainer for swerve drive with YAGSL.
@@ -31,6 +32,7 @@ public class RobotContainer {
     
     // Subsystems
     private final Flywheel ballSubsystem = new Flywheel();
+    private final LauncherSubsystem launchSubsystem = new LauncherSubsystem();
     private final Intake intakeSubsystem = new Intake();
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
@@ -60,31 +62,13 @@ public class RobotContainer {
 
         // === FIX: Wrap PathPlannerAuto in InstantCommand for dashboard visibility ===
         autoChooser.setDefaultOption("Default Auto", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
-        autoChooser.addOption("My Auto", new InstantCommand(() -> new PathPlannerAuto("MyAuto").schedule()));
-        autoChooser.addOption("Starting Point 3, Taxi", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Taxi").schedule()));
-        autoChooser.addOption("Starting Point 3, Shoot", new InstantCommand(() -> new PathPlannerAuto("Start Point 3, Shoot").schedule()));
-        autoChooser.addOption("Starting Point 3, Shoot, Collect, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot, Collect, Shoot").schedule()));
-
-        autoChooser.addOption("Starting Point 1, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Feed Human").schedule()));
-        autoChooser.addOption("Starting Point 3, Feed Human", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Feed Human").schedule()));
-        
-        autoChooser.addOption("Starting Point 1, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good").schedule()));
-        autoChooser.addOption("Starting Point 1, Shoot Good Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Shoot Good Complex").schedule()));
-
-
-        autoChooser.addOption("Starting Point 2, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot").schedule()));
-        autoChooser.addOption("Starting Point 2, Shoot Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 2, Shoot Complex").schedule()));
-        
-        autoChooser.addOption("Starting Point 3, Shoot Good", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good").schedule()));
-        autoChooser.addOption("Starting Point 3, Shoot Good Complex", new InstantCommand(() -> new PathPlannerAuto("Starting Point 3, Shoot Good Complex").schedule()));
-
-        autoChooser.addOption("Test rotate", new InstantCommand(() -> new PathPlannerAuto("Test rotate").schedule()));
-
+        autoChooser.setDefaultOption("Collect 1", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Collect").schedule()));
+        autoChooser.setDefaultOption("Collect 1, Shoot", new InstantCommand(() -> new PathPlannerAuto("Starting Point 1, Collect, Shoot").schedule()));
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         NamedCommands.registerCommand("i", intakeSubsystem.intakeCommand());
         NamedCommands.registerCommand("e", intakeSubsystem.ejectCommand());
-        NamedCommands.registerCommand("l", ballSubsystem.launchCommand());
+        NamedCommands.registerCommand("l", launchSubsystem.launchCommand());
         NamedCommands.registerCommand("sUp", ballSubsystem.spinUpCommand());
         NamedCommands.registerCommand("iAD", intakeSubsystem.indexArmCommand());
         NamedCommands.registerCommand("iAU", intakeSubsystem.reverseIndexArmCommand());
@@ -94,7 +78,7 @@ public class RobotContainer {
         NamedCommands.registerCommand(
             "intake",
             new ParallelDeadlineGroup(
-                new WaitCommand(2), // how long you want the intake to run
+                new WaitCommand(2.5), // how long you want the intake to run
                 new StartEndCommand(
                     () -> intakeSubsystem.intake(),  // start intaking
                     () -> intakeSubsystem.stopIntake(),    // stop motors at the end
@@ -107,8 +91,8 @@ public class RobotContainer {
             new ParallelDeadlineGroup(
                 new WaitCommand(2), //Assumuption CHANGE LATER
                 new StartEndCommand(
-                    () -> intakeSubsystem.indexDown(),               // move arm down
-                    () -> intakeSubsystem.stopIntakeArm(),    // stop arm motor
+                    () -> intakeSubsystem.indexDown(),               // runs index 
+                    () -> intakeSubsystem.stopIntakeArm(),    // stops index 
                     intakeSubsystem
                 )
             )
@@ -126,17 +110,39 @@ public class RobotContainer {
         );
         
 
-        //Shoot commands for auto/pathplanner
+        // //Shoot commands for auto/pathplanner
+        // NamedCommands.registerCommand(
+        //     "shootMin",
+        //     new StartEndCommand(
+        //         () -> {
+        //             ballSubsystem.runFlywheel();
+        //             launchSubsystem.launchReverse();
+        //         },
+        //         () -> ballSubsystem.stop(),
+        //         ballSubsystem
+        //     )
+        // );
+
         NamedCommands.registerCommand(
-            "shootMin",
+            "onlyLaunch",
+            new StartEndCommand(
+                () -> {
+                    launchSubsystem.launchReverse();
+                },
+                () -> launchSubsystem.stopLaunch(),
+                launchSubsystem
+            )
+        );
+
+        NamedCommands.registerCommand(
+            "onlyFlywheel",
             new StartEndCommand(
                 () -> {
                     ballSubsystem.runFlywheel();
-                    ballSubsystem.launch();
                 },
-                () -> ballSubsystem.stop(),
+                () -> ballSubsystem.stopFlywheel(),
                 ballSubsystem
-            ).withTimeout(6)
+            )
         );
 
         // NamedCommands.registerCommand(
@@ -176,6 +182,9 @@ public class RobotContainer {
             )
         );
     }
+
+    // parallel deadline group wait command to choose when it ends sequential command group and then a wait command 
+    // run commands in sequence wait a sec then run the other command 
 
     /**
      * Configure controller buttons and triggers.
@@ -224,9 +233,13 @@ public class RobotContainer {
             //     .finallyDo(() -> ballSubsystem.stop()));
 
         operatorController.leftTrigger()
-        .whileTrue(ballSubsystem.spinUpCommand().withTimeout(2)
-        .andThen(ballSubsystem.launchCommand())
+        .whileTrue(ballSubsystem.spinUpCommand()
         .finallyDo(() -> ballSubsystem.stop()));
+
+        operatorController.rightTrigger()
+        .whileTrue(launchSubsystem.reverseLaunchCommand()
+        .finallyDo(() -> launchSubsystem.stopLaunch()));
+
 
         // operatorController.x()
         // .whileTrue(ballSubsystem.spinUpCommand())
@@ -272,10 +285,10 @@ public class RobotContainer {
         // this ejects... confusing lol
         operatorController.a()
              .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.intake(), () -> intakeSubsystem.stopRoller()));
-
-        // // makes arm go down
-        // operatorController.x()
-        //      .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.indexArm(), () -> intakeSubsystem.stopIndexArm()));
+ 
+        // makes arm go down
+        operatorController.x()
+             .whileTrue(intakeSubsystem.runEnd(() -> intakeSubsystem.indexDown(), () -> intakeSubsystem.stopIndexArm()));
 
         // move index to roll down
         operatorController.y()
@@ -286,7 +299,7 @@ public class RobotContainer {
      * Called at the start of autonomous to get selected auto command.
      */
     public Command getAutonomousCommand() {
-        m_robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
+        // m_robotDrive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0)));
         return autoChooser.getSelected();
     }
 

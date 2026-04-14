@@ -56,12 +56,12 @@ public class Intake extends SubsystemBase {
 
 
     public void indexDown() {
-        indexArm.setVoltage(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
+        indexArm.setVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
     }
 
     // A method to move intake arm
     public void reverseIndexArm() {
-        indexArm.setVoltage(-1 * SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
+        indexArm.setVoltage(SmartDashboard.getNumber("Intaking feeder roller value", INTAKING_ARM_VOLTAGE));
     }
 
     // A method to set the rollers to values for ejecting fuel out the intake. Uses

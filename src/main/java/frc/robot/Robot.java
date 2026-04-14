@@ -53,12 +53,12 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-    UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setPixelFormat(PixelFormat.kMJPEG);
-    camera.setResolution(320, 240);
-    camera.setExposureManual(40);
-    camera.setWhiteBalanceAuto();
-    camera.setFPS(30);
+    // UsbCamera camera = CameraServer.startAutomaticCapture();
+    // camera.setPixelFormat(PixelFormat.kMJPEG);
+    // camera.setResolution(320, 240);
+    // camera.setExposureManual(40);
+    // camera.setWhiteBalanceAuto();
+    // camera.setFPS(30);
 
   }
 
@@ -165,6 +165,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
