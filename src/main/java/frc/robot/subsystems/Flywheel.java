@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       private final SparkClosedLoopController pid;
       private final RelativeEncoder encoder;
 
-      private double targetRPM = -1000; // default target RPM
+      private double targetRPM = -3000; // default target RPM
       private double kP = SmartDashboard.getNumber("kP", 0.0012);
       private double kI = SmartDashboard.getNumber("kI", 0.00001);
       private double kD = SmartDashboard.getNumber("kD", 0.00001);
@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       @Override
       public void periodic() {
 
+      SmartDashboard.putNumber("FlywheelRPM", getRPM());
       Logger.recordOutput("Flywheel/CurrentRPM", getRPM());
       Logger.recordOutput("Flywheel/TargetRPM", targetRPM);
 
@@ -63,8 +64,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
           // Closed-loop PID + feedforward
           feederConfig.closedLoop
-              .pid(0.004, 0, 0)
-              .feedForward.kS(0.2).kV(0.0020).kA(0); // shoul
+              .pid(kP, kI, kD)
+              .feedForward.kS(0.2).kV(0.0025).kA(0.025); // shoul
 
           spinUpFeeder.configure(feederConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -99,9 +100,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
           spinUpFeeder.set(0);
       }
 
+      // A method to stop the rollers
+ 
+
       public void stop()
       {
         spinUpFeeder.stopMotor();
+
       }
 
       /** Get current RPM */
@@ -140,6 +145,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
       //     .until(() -> getRPM() >= targetRPM * 0.98);
       // }
 
+      // A method to set the rollers to values for launching.
+
+
+
+
+
 
 
   }
+
+
+
+
+
+

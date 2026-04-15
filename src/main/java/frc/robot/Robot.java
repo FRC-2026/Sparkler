@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 
 
@@ -70,12 +72,15 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    DataLogManager.start();//command to start the operation
-    DriverStation.startDataLog(DataLogManager.getLog());//addidng all the datas
+  Logger.recordMetadata("ProjectName", "MyRobot");
 
-    Logger.start();//starts logging
+  Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));  
+  Logger.addDataReceiver(new NT4Publisher());
 
-    Logger.recordMetadata("ProjectName", "MyRobot");
+  Logger.start(); // MUST be LAST
+
+  DataLogManager.start();
+  DriverStation.startDataLog(DataLogManager.getLog());
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
